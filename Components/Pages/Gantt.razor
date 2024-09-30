@@ -1,0 +1,31 @@
+﻿@page "/gantt"
+@using MudBlazor
+
+<MudTable Items="@items" Hover="true" Breakpoint="Breakpoint.Sm">
+    <HeaderContent>
+        <MudTh>Task</MudTh>
+        <MudTh>Start</MudTh>
+        <MudTh>End</MudTh>
+    </HeaderContent>
+    <RowTemplate Context="item">
+        <MudTd DataLabel="Task">@item.Task</MudTd>
+            <MudTd DataLabel="Start">@item.Start.ToString("d")</MudTd>
+            <MudTd DataLabel="End">@item.End.ToString("d")</MudTd>
+        </RowTemplate>
+    </MudTable>
+
+    @code {
+    public class GanttItem
+    {
+        public string Task { get; set; }
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
+    }
+
+    List<GanttItem> items = new List<GanttItem>
+    {
+        new GanttItem { Task = "Task 1", Start = new DateTime(2024, 1, 1), End = new DateTime(2024, 1, 5) },
+        new GanttItem { Task = "Task 2", Start = new DateTime(2024, 1, 6), End = new DateTime(2024, 1, 10) },
+        // Add more tasks as needed
+    };
+}

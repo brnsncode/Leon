@@ -1,0 +1,169 @@
+﻿ @page "/userdashboard"
+@using Leon.Models
+@using MudBlazor
+
+@if (_assignedTasks == null)
+{
+    <p><em>Loading data please wait...</em></p>
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+}
+else
+{
+    <MudText Align="Align.Center" Typo="Typo.h2"><b>Capacity</b> Manager</MudText>
+    <br />
+    @foreach (var resource in _resources)
+    {
+        <MudDivider />
+        <br />
+        <MudText Typo="Typo.h6">@resource.EmployeeName</MudText>
+        <MudSpacer />
+
+
+
+        <p hidden>@PopulateTasks(resource.ResourceId);</p>
+        Console.WriteLine("ResoureceLoop");
+        <MudDropContainer T="AssignedTask" @ref="_dropContainer" Items="@assignedTasks" ItemsSelector="@((item,status) => item.Status == status)" ItemDropped="TaskUpdated" Class="d-flex flex-row">
+            <ChildContent>
+
+                @foreach (var item in _dashboardStatuses)
+                {
+                    if(item.Name == "Complete")
+                    {
+                        <MudPaper Elevation="0" Width="100%" MinHeight="400px" MaxHeight="1000px" Class="pa-4 ma-4 d-flex flex-column mud-background-gray rounded-lg overflow-y-auto">
+                            <MudToolBar DisableGutters="true">
+                                <MudText Typo="Typo.subtitle1"><b>@item.Name</b></MudText>
+                                <MudSpacer />
+                                <p hidden>@PopulateCapacity(resource.ResourceId);</p>                           
+                                <MudMenu Icon="@Icons.Material.Rounded.MoreHoriz" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" ListClass="pa-2 d-flex flex-column" PopoverClass="mud-elevation-25">
+                                    @* 		<MudButton Size="Size.Small" Color="Color.Error" StartIcon="@Icons.Material.Outlined.Delete" OnClick="@( () => DeleteSection(item))">Delete Section</MudButton> *@
+                                    <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Rounded.Edit">Rename Section</MudButton>
+                                </MudMenu>
+                            </MudToolBar>
+                            <MudDropZone T="AssignedTask" Identifier="@item.Name" Class="mud-height-full" />
+
+                        </MudPaper>
+                    }
+                    else{     
+                    <MudPaper Elevation="0" Width="100%" MinHeight="400px" Class="pa-4 ma-4 d-flex flex-column mud-background-gray rounded-lg">
+                        <MudToolBar DisableGutters="true">
+                            <MudText Typo="Typo.subtitle1"><b>@item.Name</b></MudText>
+                            @* <MudSpacer /> *@
+                            <p hidden>@PopulateCapacity(resource.ResourceId);</p>
+                            @if (item.DashboardId == 2)
+                            {
+                                if (_dashboardColumnCapacityForResource < 10)
+                                {
+                                    <MudBadge Content="_dashboardColumnCapacityForResource" Color="Color.Success" Overlap="true" Class="mx-6">
+                                        <MudIcon Icon="@Icons.Material.Filled.Battery1Bar" Color="Color.Default" />
+                                    </MudBadge>
+                                }
+                                if (_dashboardColumnCapacityForResource >= 10 && _dashboardColumnCapacityForResource < 25)
+                                {
+                                    <MudBadge Content="_dashboardColumnCapacityForResource" Color="Color.Success" Overlap="true" Class="mx-6" Max="999">
+                                        <MudIcon Icon="@Icons.Material.Filled.Battery2Bar" Color="Color.Default" />
+                                    </MudBadge>
+                                }
+                                if (_dashboardColumnCapacityForResource >= 25 && _dashboardColumnCapacityForResource < 50)
+                                {
+                                    <MudBadge Content="_dashboardColumnCapacityForResource" Color="Color.Success" Overlap="true" Class="mx-6" Max="999">
+                                        <MudIcon Icon="@Icons.Material.Filled.Battery4Bar" Color="Color.Default" />
+                                    </MudBadge>
+                                }
+                                if (_dashboardColumnCapacityForResource >= 50 && _dashboardColumnCapacityForResource < 75)
+                                {
+                                    <MudBadge Content="_dashboardColumnCapacityForResource" Color="Color.Success" Overlap="true" Class="mx-6" Max="999">
+                                        <MudIcon Icon="@Icons.Material.Filled.Battery5Bar" Color="Color.Default" />
+                                    </MudBadge>
+                                }
+                                if (_dashboardColumnCapacityForResource >= 75 && _dashboardColumnCapacityForResource < 100)
+                                {
+                                        <MudBadge Content="_dashboardColumnCapacityForResource" Color="Color.Warning" Overlap="true" Class="mx-6" Max="999">
+                                            <MudIcon Icon="@Icons.Material.Filled.BatteryFull" Color="Color.Default" />
+                                    </MudBadge>
+                                }
+                                if (_dashboardColumnCapacityForResource >= 100)
+                                {
+                                    <MudBadge Content="_dashboardColumnCapacityForResource" Color="Color.Error" Overlap="true" Class="mx-6" Max="999">
+                                        <MudIcon Icon="@Icons.Material.Filled.BatteryAlert" Color="Color.Default" />
+                                    </MudBadge>
+                                }
+
+                                <MudSpacer />
+                            }
+                            <MudMenu Icon="@Icons.Material.Rounded.MoreHoriz" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" ListClass="pa-2 d-flex flex-column" PopoverClass="mud-elevation-25">
+                                @* 		<MudButton Size="Size.Small" Color="Color.Error" StartIcon="@Icons.Material.Outlined.Delete" OnClick="@( () => DeleteSection(item))">Delete Section</MudButton> *@
+                                <MudButton Size="Size.Small" Color="Color.Default" StartIcon="@Icons.Material.Rounded.Edit">Rename Section</MudButton>
+                            </MudMenu>
+                            </MudToolBar>
+                        <MudDropZone T="AssignedTask" Identifier="@item.Name" Class="mud-height-full" />
+
+
+                        <MudPaper Elevation="25" Class="pa-2 rounded-lg">
+                            <MudButton OnClick="@((e) => OpenNewTaskDialog(maxWidth,item.Name))" StartIcon="@Icons.Material.Filled.Add" FullWidth="true" Class="rounded-lg py-2">Add Task</MudButton>
+
+                        </MudPaper>
+
+                    </MudPaper>
+                    }
+                }
+
+                <MudPaper Class="pa-4" Elevation="0" Width="224px">
+                    <!--Start of - For adding new section which is not needed-->
+                    @* 			@if (_addSectionOpen)
+            {
+            <MudPaper Elevation="0" Width="224px" Class="pa-4 d-flex flex-column mud-background-gray rounded-lg">
+            <EditForm Model="@newSectionModel" OnValidSubmit="OnValidSectionSubmit">
+            <DataAnnotationsValidator />
+            <MudTextField @bind-Value="newSectionModel.Name" For="@(() => newSectionModel.Name)" Placeholder="New Section" DisableUnderLine="true"></MudTextField>
+            <MudButton ButtonType="ButtonType.Submit" Size="Size.Small" Color="Color.Primary" FullWidth="true">Add Section</MudButton>
+            </EditForm>
+            </MudPaper>
+            }
+            else
+            {
+            <MudButton OnClick="OpenAddNewSection" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" Class="rounded-lg py-2" FullWidth="true">Add Section</MudButton>
+            } *@
+                    <!--End of - For adding new section which is not needed-->
+                </MudPaper>
+            </ChildContent>
+            <ItemRenderer>
+                @if (@context.IsReminder == true)
+                {
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText>@context.TaskName</MudText>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                    <MudIconButton Icon="@Icons.Material.Filled.AccessTime" Color="Color.Info" />
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudCardContent>
+                                <MudText Typo="Typo.body2">Details for @context.TaskName.</MudText>
+                        </MudCardContent>
+                        <MudCardActions>
+                                <MudButton OnClick="@((e) => OpenViewTaskDialog(maxWidth, @context.TaskId,@context.ProjectId, @context.ResourceId))" Size="Size.Small" Variant="Variant.Text" Color="Color.Primary">View Task</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                
+                }
+                else
+                {
+                    <MudCard>
+                        <MudCardContent>
+                            <MudText>@context.TaskName</MudText>
+                                <MudText Typo="Typo.body2">Details for @context.TaskName.</MudText>
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudButton OnClick="@((e) => OpenViewTaskDialog(maxWidth, @context.TaskId,@context.ProjectId, @context.ResourceId))" Size="Size.Small" Variant="Variant.Text" Color="Color.Primary">View Task</MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                }
+
+                    <br />
+                </ItemRenderer>
+            </MudDropContainer>
+        <MudDivider />
+
+    }
+}

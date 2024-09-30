@@ -1,0 +1,103 @@
+﻿ @using MudBlazor
+
+<MudDialog>
+    <DialogContent>
+        <MudMenu Icon="@Icons.Material.Rounded.MoreHoriz" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" ListClass="pa-2 d-flex flex-column" PopoverClass="mud-elevation-25">
+            <MudButton Size="Size.Small" Color="Color.Error" StartIcon="@Icons.Material.Outlined.Delete" OnClick="@( () => DeleteTask(filteredTaskId))">Delete Task</MudButton>
+        </MudMenu>
+        @*<MudTextField Value="@toEmail" Label="To:" ReadOnly="true" />*@
+        @* <MudTextField T="string" Label="TaskId" Variant="Variant.Text" @bind-Text="@taskId" /> *@
+        @* <MudTextField T="string" Label="@filteredTaskId" Variant="Variant.Text" @bind-Text="@taskName" /> *@
+        @if (filteredProjectId == 0)
+        {
+            //display nothing
+        }
+        else
+        {
+            <MudAutocomplete Text="@_currentProjectName" T="string" Label="ProjectName" Dense="true" @onmousedown="@OnInputHandler" @bind-Value="projectValue" SearchFunc="@SearchProjects" />
+        }
+        @* <MudTextField T="string" Label="OperationId" Variant="Variant.Text" @bind-Text="@operationId" /> *@
+        <MudAutocomplete Text="@_currentResourceName" T="string" Label="Resources" Dense="true" @onmousedown="@OnInputHandler" @bind-Value="resourceValue" SearchFunc="@SearchResources" />
+        <MudTextField T="string" Label="CapacityPercentage" Text="@capacityPercentage" ReadOnly="true" />     <MudSpacer />
+        <MudDatePicker Label="Reminder Date" @bind-Date="filteredReminderDate" DisableToolbar="true" />
+
+        @* <MudTextField T="int" Label="Capacity" Variant="Variant.Text" @bind-Value="@capacity" /> *@
+        @if (_assignedTaskNotes == null)
+        {
+            <p><em>Loading data please wait...</em></p>
+        }
+        else
+        {
+            <br />
+            <MudText>Notes:</MudText>
+
+            if (_currentProjectName == "Ticket Tracker")
+            {
+                if (_assignedTaskNotes.Count == 0)
+                {
+                    <MudText>No notes for this task.</MudText>
+                    <MudTextField @bind-Value="newNote" Label="New Note" Lines="5" Variant="Variant.Outlined" />
+                }
+                else
+                {
+                    <MudTextField @bind-Value="newNote" Label="New Note" Lines="5" Variant="Variant.Outlined" />
+                    <br />
+
+                    @foreach (var item in _assignedTaskNotes)
+                    {
+                        <MudSpacer />
+                        if (isFirst)
+                        {
+                            <MudTextField Value="item.NoteText" Variant="Variant.Outlined" Label="@($"{item.CreationDate.ToLongDateString()} {item.CreationDate.ToLongTimeString()}")"
+                                           Lines="GetLineCount(item.NoteText)" Error="true" />
+                            isFirst = false;
+                        }
+                        else
+                        {
+                            <MudTextField Value="item.NoteText" Label="@($"{item.CreationDate.ToLongDateString()} {item.CreationDate.ToLongTimeString()}")"
+                                          ReadOnly="true" Lines="GetLineCount(item.NoteText)" />
+                        }
+
+                    }
+                }
+            }
+            else
+            {
+                if (_assignedTaskNotes.Count == 0)
+                {
+                    <MudText>No notes for this task.</MudText>
+                    <MudTextField @bind-Value="newNote" Label="New Note" Lines="5" Variant="Variant.Outlined" />
+                }
+                else
+                {
+                    <MudTextField @bind-Value="newNote" Label="New Note" Lines="5" Variant="Variant.Outlined" />
+                    <br />
+
+                    @foreach (var item in _assignedTaskNotes)
+                    {
+                        <MudSpacer />
+                        if (isFirst)
+                        {
+                            <MudTextField Value="item.NoteText" Variant="Variant.Outlined" Label="@($"{item.CreationDate.ToLongDateString()} {item.CreationDate.ToLongTimeString()}")"
+                                          ReadOnly="true" Lines="GetLineCount(item.NoteText)" Error="true" />
+                            isFirst = false;
+                        }
+                        else
+                        {
+                            <MudTextField Value="item.NoteText" Label="@($"{item.CreationDate.ToLongDateString()} {item.CreationDate.ToLongTimeString()}")"
+                                          ReadOnly="true" Lines="GetLineCount(item.NoteText)" />
+                        }
+
+                    }
+                }
+            }
+        }
+
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        @* <MudButton Color="Color.Primary" OnClick="UpdateTask">Update Task</MudButton> *@
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="UpdateTask">Update Task</MudButton>
+
+    </DialogActions>
+</MudDialog>

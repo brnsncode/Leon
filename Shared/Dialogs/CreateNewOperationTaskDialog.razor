@@ -1,0 +1,27 @@
+﻿ @using MudBlazor
+
+<MudDialog>
+    <DialogContent>
+        @*< Value="@toEmail" Label="To:" ReadOnly="true" />*@
+        @* <MudTextField T="string" Label="TaskId" Variant="Variant.Text" @bind-Text="@taskId" /> *@
+        <MudTextField T="string" Label="Task Name" Variant="Variant.Text" @bind-Text="@taskName" Lines="1" Required="true" RequiredError="User name is required!" />
+        @* <MudAutocomplete T="string" Label="Project Name" Dense="true" @onchange="@OnInputHandler" @bind-Value="projectValue" SearchFunc="@SearchProjects" ResetValueOnEmptyText="@resetValueOnEmptyText" /> *@
+        @* <MudTextField T="string" Label="OperationId" Variant="Variant.Text" @bind-Text="@operationId" /> *@
+        @* <MudAutocomplete T="string" Label="Resource Name" Dense="true" @onchange="@OnInputHandler" @bind-Value="resourceValue" SearchFunc="@SearchResources" ResetValueOnEmptyText="@resetValueOnEmptyText" /> *@
+        <MudTextField T="string" Label="Resource Name" Text="@filteredResourceName" ReadOnly="true" />     <MudSpacer />
+        
+        <MudTextField T="string" Label="Status" Text="@passedStatus" ReadOnly="true" />     <MudSpacer />
+        <MudCheckBox T="bool" @bind-value="isReminder" Color="Color.Primary" ReadOnly="true">Set as reminder</MudCheckBox> <MudSpacer />
+        <MudCheckBox T="bool" @bind-value="createPlannerTask" Color="Color.Primary" >Create planner task</MudCheckBox>
+        @* <MudCheckBox T="bool" @bind-value="linkToPlanner" Color="Color.Primary" ReadOnly="true">Link to planner</MudCheckBox> *@
+
+
+        <MudTextField T="string" Label="Capacity" Variant="Variant.Text" @bind-Value="@capacityPercentage" />
+        <p>@CalculateTime(capacityPercentage)</p>
+        @* <MudTextField @bind-Value="newNote" Label="New Note" Lines="5" /> *@
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="CreateNewOperationsTask">Create New Task</MudButton>
+    </DialogActions>
+</MudDialog>

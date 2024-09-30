@@ -1,0 +1,68 @@
+@inherits LayoutComponentBase
+@using Leon.Components
+@using Leon.Shared.Dialogs
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Graph
+@inject IDialogService DialogService
+@inject Microsoft.Graph.GraphServiceClient GraphServiceClient
+@attribute [Authorize]
+
+<MyMudThemeProvider />
+<MyMudProviders />
+
+<MudLayout>
+    <MudAppBar Elevation="0">
+		<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudSpacer />
+@*         <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor" Color="Color.Inherit" Link="https://mudblazor.com/" Target="_blank" />
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/MudBlazor/MudBlazor/" Target="_blank" /> *@
+        @if (user == null)
+        {
+            <MudChip Color="Color.Error">Not Logged In</MudChip>
+        }
+        else
+        {
+                @user.DisplayName
+        }
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">Leon</MudText>
+        </MudDrawerHeader>
+        <NavMenu />
+    </MudDrawer>
+    <MudMainContent>
+        @* <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pt-16"> *@
+            @Body
+        @* </MudContainer> *@
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    User? user;
+    bool _drawerOpen = false;
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private void OpenDialog()
+    {
+        var options = new DialogOptions { ClassBackground = "my-custom-class" };
+        DialogService.Show<BlurryDialog>("Please login to continue", options);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            user = await GraphServiceClient.Me.Request().GetAsync();
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+}

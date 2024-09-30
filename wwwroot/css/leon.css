@@ -1,0 +1,31 @@
+﻿/* MyComponent.razor.css */
+.icon {
+    position: relative;
+    width: 120px;
+    height: 120px;
+}
+
+    .icon .shape {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        border-radius: 20px;
+    }
+
+        .icon .shape.purple {
+            background: linear-gradient(to right, #800080, #E6E6FA);
+            top: 0;
+            left: 0;
+        }
+
+        .icon .shape.pink {
+            background: linear-gradient(to right, #FFC0CB, #FF69B4);
+            top: 10px;
+            left: 10px;
+        }
+
+        .icon .shape.blue {
+            background: linear-gradient(to right, #1E90FF, #ADD8E6);
+            top: 20px;
+            left: 20px;
+        }

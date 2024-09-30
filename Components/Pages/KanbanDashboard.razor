@@ -1,0 +1,303 @@
+﻿@page "/kanbandashboard"
+@using Leon.Models
+@using MudBlazor
+
+@* 
+
+<MudButton OnClick="@((e) => ClearCacheWithLogin())"Variant="Variant.Filled" Color="Color.Primary">Login</MudButton> *@
+
+
+@if (_assignedTasks == null)
+{
+    <br />
+    <MudText Align="Align.Center" ><p><em>Loading data please wait...</em></p></MudText>
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+}
+else
+{
+    <!--Start Title Info-->
+    <br />
+    <MudText Align="Align.Center" Typo="Typo.h3">
+        <b>Kanban</b> Board
+
+        @if (DateTime.Now.DayOfWeek == DayOfWeek.Thursday)
+        {
+            <MudChip Color="Color.Primary" Target="_blank" Href="https://project.microsoft.com/optrust.onmicrosoft.com/en-CA#/taskgrid?projectId=22502e82-071b-48d9-af38-2d67b82acd97" Style="@($"background:{Colors.Green.Darken3}")">MS Project</MudChip>
+            <MudChip Target="_blank" Href="https://optrust.sharepoint.com/sites/IT/Lists/ITOS%20Book%20of%20Work/AllItems.aspx?newTargetListUrl=%2Fsites%2FIT%2FLists%2FITOS%20Book%20of%20Work&viewpath=%2Fsites%2FIT%2FLists%2FITOS%20Book%20of%20Work%2FAllItems%2Easpx&useFiltersInViewXml=1&isAscending=true&FilterField1=TechLead&FilterValue1=Bronson%20Lee&FilterType1=User&FilterFields2=Status&FilterValues2=In%20Progress%3B%23Not%20Started&FilterTypes2=Choice&viewid=b39dc4ae%2D8af2%2D40fb%2D8774%2D2bdde4dd5fe0" Color="Color.Error">Update OneList</MudChip>
+        }
+    </MudText>
+    <br />
+    <!--End Title Info-->
+    <!--Start Resource Info-->
+    @foreach (var resource in _resources)
+    {
+        <MudText Align="Align.Center">
+        <MudButton OnClick="@((e) => OpenViewTaskDialog(maxWidth, 1786,0, 1, "Ticket Tracker", "10", null,true,false))" Size="Size.Medium" Variant="Variant.Filled" Color="Color.Primary" Class="align-content-center">Ticket Tracker</MudButton>
+        </MudText>
+        <br />
+        <!--Start Employee Info-->
+        <MudDivider />
+        <br />
+        <!--<MudText Align="Align.Center" Typo="Typo.h6">@resource.EmployeeName</MudText>-->
+        <MudSpacer />
+
+        <!--Hidden Task Info-->
+        <p hidden>@PopulateTasks(resource.ResourceId);</p>
+        Console.WriteLine("ResoureceLoop");
+        <!--Hidden Task Info-->
+        <!--End Employee Info-->
+        <!--Start DropContainer Info-->
+        <MudDropContainer T="AssignedTask" @ref="_dropContainer" Items="@assignedTasks" ItemsSelector="@((item,status) => item.Status == status)" ItemDropped="TaskUpdated" Class="d-flex flex-row">
+            <ChildContent>
+                @foreach (var item in _dashboardStatuses)
+                {
+                    <!--Start Dashboard Status Colums-->
+                    <MudPaper Elevation="0" Width="100%" MinHeight="400px" Class="pa-4 ma-4 d-flex flex-column mud-background-gray rounded-lg">
+
+                        <!--Start New Task Area-->
+                        <MudPaper Elevation="25" Class="pa-2 rounded-lg d-flex align-center justify-center mud-width-full py-8">
+                            <MudButton OnClick="@((e) => OpenNewOperationTaskDialog(maxWidth,item.Name, resource.ResourceId))" StartIcon="@Icons.Material.Filled.Add" FullWidth="true" Class="rounded-lg py-2">Add Task</MudButton>
+                        </MudPaper>
+                        <!--End New Task Area-->
+                        <!--Start Coumn Toolbar Area-->
+                        <MudToolBar DisableGutters="true">
+                            <MudText Typo="Typo.subtitle1"><b>@item.Name</b></MudText>
+
+                            <!--Hidden Task Info-->
+                            <p hidden>@PopulateCapacity(resource.ResourceId);</p>
+                            <!--Hidden Task Info-->
+                            @if (item.DashboardId == 2)
+                            {
+                            <div>
+                         
+                                @if (_dashboardColumnCapacityForResource < 10)
+                                { 
+                                    <div class="d-inline">
+                                    <MudBadge Content="_dashboardColumnCapacityForResource" Color="Color.Success" Overlap="true" Class="mx-6">
+                                        <MudIcon Icon="@Icons.Material.Filled.Battery1Bar" Size="Size.Large" Color="Color.Default" />
+                                    </MudBadge>
+                                    </div>
+                                }
+                                @if (_dashboardColumnCapacityForResource >= 10 && _dashboardColumnCapacityForResource < 25)
+                                {
+                                        <div class="d-inline">
+                                    <MudBadge Content="_dashboardColumnCapacityForResource" Color="Color.Success" Overlap="true" Class="mx-6" Max="999">
+                                        <MudIcon Icon="@Icons.Material.Filled.Battery2Bar" Size="Size.Large" Color="Color.Default" />
+                                    </MudBadge>
+                                        </div>
+                                }
+                                @if (_dashboardColumnCapacityForResource >= 25 && _dashboardColumnCapacityForResource < 50)
+                                {
+                                    <MudBadge Content="_dashboardColumnCapacityForResource" Color="Color.Success" Overlap="true" Class="mx-6" Max="999">
+                                        <MudIcon Icon="@Icons.Material.Filled.Battery4Bar" Size="Size.Large" Color="Color.Default" />
+                                    </MudBadge>
+                                }
+                                @if (_dashboardColumnCapacityForResource >= 50 && _dashboardColumnCapacityForResource < 75)
+                                {
+                                    <MudBadge Content="_dashboardColumnCapacityForResource" Color="Color.Success" Overlap="true" Class="mx-6" Max="999">
+                                        <MudIcon Icon="@Icons.Material.Filled.Battery5Bar" Size="Size.Large" Color="Color.Default" />
+                                    </MudBadge>
+                                }
+                                @if (_dashboardColumnCapacityForResource >= 75 && _dashboardColumnCapacityForResource < 100)
+                                {
+                                    <MudBadge Content="_dashboardColumnCapacityForResource" Color="Color.Warning" Overlap="true" Class="mx-6" Max="999">
+                                        <MudIcon Icon="@Icons.Material.Filled.BatteryFull" Size="Size.Large" Color="Color.Default" />
+                                    </MudBadge>
+                                }
+                                @if (_dashboardColumnCapacityForResource >= 100)
+                                {
+                                        <div style="text-align: right" class="d-inline">
+                                    <MudBadge Content="_dashboardColumnCapacityForResource" Color="Color.Error" Overlap="true" Class="mx-6" Max="999">
+                                        <MudIcon Icon="@Icons.Material.Filled.BatteryAlert"  Size="Size.Large" Color="Color.Default" />
+                                    </MudBadge>
+                                     </div>
+                                }
+                                <MudSpacer />
+                                </div>
+                            }
+                        </MudToolBar>
+                        <!--End Coumn Toolbar Area-->
+                        <MudDropZone T="AssignedTask" Identifier="@item.Name" Class="mud-height-full" />
+                    </MudPaper>
+
+                    <!--End Dashboard Status Colums Colums-->
+                }
+            </ChildContent>
+            <ItemRenderer>
+                <!--Start Task Info Population Area-->
+                <p hidden>@GetLatestTaskNote(@context.TaskId)</p>
+                <!--Start Reminder Check Area-->
+                @if (@context.IsReminder == true)
+                {
+                    <!--Start Outline Red Box Area-->
+                    if (@context.Status == "In Progress" && context.LastUpdated < DateTime.Now.AddDays(-3) && @context.Ongoing == null)
+                    {
+                        <MudCard Outlined="true" Class="border mud-border-error">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudText>@context.TaskName</MudText>
+                                        <br />
+                                        @if (@context.Status != "Complete" && context.LastUpdated < DateTime.Now.AddDays(-1) && context.LastUpdated >= DateTime.Now.AddDays(-3) && @context.Ongoing == null)
+                                    {
+                                        <MudText Typo="Typo.caption" Color="Color.Warning">Date Entered: @context.DateEntered?.ToShortDateString()</MudText>
+                                        <br />
+                                        <MudText Typo="Typo.caption" Color="Color.Warning">Last Updated: @context.LastUpdated?.ToShortDateString()</MudText>
+                                    }
+                                    else if (@context.Status != "Complete" && context.LastUpdated < DateTime.Now.AddDays(-3) && @context.Ongoing == null)
+                                    {
+                                        <MudText Typo="Typo.caption" Color="Color.Error">Date Entered: @context.DateEntered?.ToShortDateString()</MudText>
+                                        <br />
+                                        <MudText Typo="Typo.caption" Color="Color.Error">Last Updated: @context.LastUpdated?.ToShortDateString()</MudText>
+                                    }
+
+                                    else
+                                    {
+                                        if (@context.LastUpdated != null)
+                                        {
+                                            <MudText Typo="Typo.caption">Date Entered: @context.DateEntered?.ToShortDateString()</MudText>
+                                            <br />
+                                            <MudText Typo="Typo.caption">Last Updated: @context.LastUpdated?.ToShortDateString()</MudText>
+                                        }
+                                        else
+                                        {
+                                            <MudText Typo="Typo.caption">Date Entered: @context.DateEntered?.ToShortDateString()</MudText>
+                                            <br />
+                                            <MudText Typo="Typo.caption" Color="Color.Primary">No update provided yet.</MudText>
+                                        }
+                                    }
+                                </CardHeaderContent>
+                                <CardHeaderActions>
+                                    <div>
+                                        <div class="d-inline">
+                                            <MudIconButton Icon="@Icons.Material.Filled.AccessTime" Color="Color.Info" />
+                                        </div>
+
+                                        @if (@context.LinkedToPlanner == true)
+                                        {
+                                            <div class="d-inline">
+                                                <MudIconButton Icon="@Icons.Material.Filled.Layers" style="color:#ca7cd2" />
+                                            </div>
+                                        }
+                                        @if (@context.LinkedToOneList == true)
+                                        {
+                                            <div class="d-inline">
+                                                <MudIconButton Icon="@Icons.Material.Filled.List" style="color:#19969c" />
+                                            </div>
+
+                                        }
+                                        @if (@context.Ongoing == true)
+                                        {
+                                            <div class="d-inline">
+                                                <MudIconButton Icon="@Icons.Material.Filled.Loop" Color="Color.Primary" />
+                                            </div>
+                                        }
+                                    </div>
+                                </CardHeaderActions>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                @*                                 <MudText Typo="Typo.body2">@latestAssignedTaskNoteDate</MudText>
+                <MudText Typo="Typo.body1">@latestAssignedTaskNote</MudText> *@
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudButton OnClick="@((e) => OpenViewTaskDialog(maxWidth, @context.TaskId,@context.ProjectId, @context.ResourceId, @context.TaskName, @context.CapacityPercentage.ToString(), @context.SetReminderDate,@context.LinkedToPlanner,@context.LinkedToOneList))" Size="Size.Small" Variant="Variant.Text" Color="Color.Primary">View Task</MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    }
+                    <!--End Outline Red Box Area-->
+                    else
+                    {
+                        <MudCard Outlined="true" Class="border">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudText>@context.TaskName</MudText>
+                                        <br />
+                                        @* <MudText Typo="Typo.caption">Last Updated: @context.LastUpdated?.ToShortDateString()</MudText> *@
+                                        @if (@context.Status != "Complete" && context.LastUpdated < DateTime.Now.AddDays(-1) && context.LastUpdated >= DateTime.Now.AddDays(-3) && @context.Ongoing == null)
+                                    {
+                                        <MudText Typo="Typo.caption" Color="Color.Warning">Date Entered: @context.DateEntered?.ToShortDateString()</MudText>
+                                        <br />
+                                        <MudText Typo="Typo.caption" Color="Color.Warning">Last Updated: @context.LastUpdated?.ToShortDateString()</MudText>
+                                    }
+                                    else if (@context.Status != "Complete" && context.LastUpdated < DateTime.Now.AddDays(-3) && @context.Ongoing == null)
+                                    {
+                                        <MudText Typo="Typo.caption" Color="Color.Error">Date Entered: @context.DateEntered?.ToShortDateString()</MudText>
+                                        <br />
+                                        <MudText Typo="Typo.caption" Color="Color.Error">Last Updated: @context.LastUpdated?.ToShortDateString()</MudText>
+                                    }
+                                    else
+                                    {
+                                        if (@context.LastUpdated != null)
+                                        {
+                                            <MudText Typo="Typo.caption">Date Entered: @context.DateEntered?.ToShortDateString()</MudText>
+                                            <br />
+                                            <MudText Typo="Typo.caption">Last Updated: @context.LastUpdated?.ToShortDateString()</MudText>
+                                        }
+                                        else
+                                        {
+                                            <MudText Typo="Typo.caption">Date Entered: @context.DateEntered?.ToShortDateString()</MudText>
+                                            <br />
+                                            <MudText Typo="Typo.caption" Color="Color.Primary">No update provided yet.</MudText>
+                                        }
+                                    }
+                                </CardHeaderContent>
+                                <CardHeaderActions>
+                                    <!--Start Inline div-->
+                                    <div>
+                                        <div class="d-inline">
+                                            <MudIconButton Icon="@Icons.Material.Filled.AccessTime" Color="Color.Info" />
+                                        </div>
+                                        @if (@context.LinkedToPlanner == true)
+                                        {
+                                            <div class="d-inline">
+                                                <MudIconButton Icon="@Icons.Material.Filled.Layers" style="color:#ca7cd2" />
+                                            </div>
+                                        }
+                                        @if (@context.LinkedToOneList == true)
+                                        {
+                                            <div class="d-inline">
+                                                <MudIconButton Icon="@Icons.Material.Filled.List" style="color:#19969c" />
+                                            </div>
+
+                                        }
+                                        @if (@context.Ongoing == true)
+                                        {
+                                            <div class="d-inline">
+                                                <MudIconButton Icon="@Icons.Material.Filled.Loop" Color="Color.Primary" />
+                                            </div>
+                                        }
+                                    </div>
+                                    <!--End Inline div-->
+                                </CardHeaderActions>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                @*<MudText Typo="Typo.body2">@latestAssignedTaskNoteDate</MudText> *@
+                                @*<MudText Typo="Typo.body1">@latestAssignedTaskNote</MudText> *@
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudButton OnClick="@((e) => OpenViewTaskDialog(maxWidth, @context.TaskId,@context.ProjectId, @context.ResourceId, @context.TaskName, @context.CapacityPercentage.ToString(), @context.SetReminderDate,@context.LinkedToPlanner,@context.LinkedToOneList))" Size="Size.Small" Variant="Variant.Text" Color="Color.Primary">View Task</MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    }
+                }
+                else
+                {
+                <MudCard>
+                    <MudCardContent>
+                        <MudText>@context.TaskName</MudText>
+                            <MudText Typo="Typo.body2">Details for @context.TaskName.</MudText>
+                        </MudCardContent>
+                    <MudCardActions>
+                        <MudButton OnClick="@((e) => OpenViewTaskDialog(maxWidth, @context.TaskId,@context.ProjectId, @context.ResourceId, @context.TaskName, @context.CapacityPercentage.ToString(), @context.SetReminderDate,@context.LinkedToPlanner,@context.LinkedToOneList))" Size="Size.Small" Variant="Variant.Text" Color="Color.Primary">View Task</MudButton>
+                    </MudCardActions>
+                </MudCard>
+                }
+                <!--End Normal Task Without Reminder Area-->
+                <!--End Task Info Population Area-->
+                <br />
+            </ItemRenderer>
+            </MudDropContainer>
+        <!--End DropContainer Info-->
+        <MudDivider />
+    }
+    <!--End Resource Info-->
+}

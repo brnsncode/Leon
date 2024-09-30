@@ -1,0 +1,17 @@
+﻿@page "/appmetrics"
+@using MudBlazor
+
+@if (_appMetrics == null)
+{
+    <p><em>Loading data please wait...</em></p>
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+}
+else
+{ 
+@* <MudText Align="Align.Center" Typo="Typo.h2"><b>Kanban</b> Board    </MudText>
+<MudDivider />
+
+ <MudChart ChartType="ChartType.Donut" LegendPosition="Position.Left" Width="300px" Height="300px"
+              InputData="@_appMetricsNumbers" InputLabels="@_appMetricsAppNames">
+</MudChart>  *@
+} 
